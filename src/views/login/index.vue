@@ -3,37 +3,40 @@ import '@/styles/index.scss'
 import { reqLogin } from '@/api/user'
 import { User, Lock } from '@element-plus/icons-vue'
 import { ref } from 'vue';
-import { useUserStore } from '@/store/userStore'
+import { useUserTokenStore } from '@/store/userStore'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router';
 
+//登录表单数据
 const data = ref({
     username: 'admin',
     password: '111111'
 })
-
-const userStore = useUserStore()
+//loading状态
+const loading = ref(false)
+const userTokenStore = useUserTokenStore()
 const router = useRouter()
-const login = () => {
+const login = async () => {
     console.log('执行登录方法, 表单数据: ', data.value)
-    reqLogin(data.value).then(res => {
-        console.log('res: ', res)
-        if (res.code === 200) {
-            console.log('登录成功')
-            userStore.setState(res.data)
-            localStorage.setItem('TOKEN', res.data.token)
-            router.push('/')
-        } else {
-            ElMessage.error((res.data as any).message)
-        }
-    }).catch(err => {
-        console.log('登录失败,错误信息: ', err)
-    })
+    //登录按钮开始loading
+    loading.value = true
+    try {
+        const res = await reqLogin(data.value)
+        console.log('登录成功, token: ', res.data.token)
+        userTokenStore.setToken(res.data.token)
+        router.push('/')
+        ElMessage.success('登录成功');
+    } catch (error:any) {
+        console.log('登录失败: ', error)
+        ElMessage.error(error.message);
+        
+    } finally {
+        loading.value = false
+    }
 }
 
 const logUserState = () => {
-    console.log('userState: ', localStorage.getItem('TOKEN'))
-
+    console.log('userState: ', userTokenStore.getToken())
 }
 </script>
 
@@ -49,7 +52,8 @@ const logUserState = () => {
                         style="margin:20px 0;"></el-input>
                     <el-input type="password" placeholder="请输入密码" :prefix-icon="Lock" show-password v-model="data.password"
                         style="margin-top: 20px;"></el-input>
-                    <el-button type="primary" class="login-btn" style="margin: 20px 0;" @click="login">登录</el-button>
+                    <el-button type="primary" class="login-btn" style="margin: 20px 0;" @click="login"
+                        :loading="loading">登录</el-button>
                     <el-button type="primary" @click="logUserState">打印用户状态信息</el-button>
                 </el-form>
             </el-col>

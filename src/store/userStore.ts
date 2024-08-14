@@ -2,14 +2,15 @@ import {defineStore} from 'pinia'
 import { ref } from 'vue'
 
 
-export const useUserStore = defineStore('user', () => {
-    const state = ref({})
+export const useUserTokenStore = defineStore('userToken', () => {
+    const token = ref('')
 
-    const getState = () =>{
-        return state.value
+    const getToken = () =>{
+        return localStorage.getItem('TOKEN')
     }
-    const setState = (val:any) =>{
-        state.value = val;
+    const setToken = (val:any) =>{
+        token.value = val;
+        localStorage.setItem('TOKEN', val)
     }
-    return {state, getState, setState}
+    return {token, setToken, getToken}
 })

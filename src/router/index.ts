@@ -1,4 +1,4 @@
-import { createMemoryHistory, createRouter, createWebHashHistory } from 'vue-router'
+import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 
 const routes = [
   { path: '/login', component: () => import('@/views/login/index.vue'), name: 'login' },

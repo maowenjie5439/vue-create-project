@@ -18,7 +18,11 @@ request.interceptors.request.use(config => {
 //响应拦截器
 request.interceptors.response.use(response => {
     console.log('response: ',response)
-    return Promise.resolve(response.data)
+    if(response.data.code === 200){
+        return Promise.resolve(response.data)
+    }else{
+        return Promise.reject(new Error(response.data.data.message))
+    }
 }, err =>{
     console.log('响应拦截器失败回调: ',err)
     //处理网络错误

@@ -8,7 +8,10 @@ interface Token{
 }
 export interface LoginResponseData{
     code: number;
-    data: Token
+    data: {
+        token?: string
+        message?:string
+    }
 } 
 
 interface User{
